@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Big Dipper in Three Dimensions</title>
+  <link href="foundation/kl-unl.css" type="text/css" rel="stylesheet" media="all">
+  <link href="styles/styles.css" type="text/css" rel="stylesheet" media="all">
+</head>
+<body>
+  <a class="sr-only sr-only-focusable" href="#sky">Skip to the simulation diagram</a>
+
+  <div class="app-shell">
+    <kl-unl-masthead sim-id="bigdipper" json-url="foundation/contents.json"></kl-unl-masthead>
+
+    <main class="app-layout">
+
+      <!-- LEFT: controls + information -------------------------------------->
+      <div class="app-layout__left">
+
+        <section class="panel sim-panel" aria-labelledby="controls-heading">
+          <h2 class="panel__heading" id="controls-heading">View Orientation</h2>
+
+          <fieldset class="control-fieldset">
+            <legend class="control-fieldset__legend">Rotate the diagram</legend>
+            <p class="sim-note" id="drag-help">
+              Click and drag on the diagram to change the orientation, or use the
+              sliders below (they are fully keyboard operable).
+            </p>
+
+            <div class="control-row sim-slider-row">
+              <label class="control-row__label" for="theta-slider">Horizontal angle</label>
+              <output class="sim-readout" id="theta-readout" for="theta-slider">221&#176;</output>
+              <input class="control-row__slider sim-slider" type="range"
+                     id="theta-slider" min="122" max="247" step="1" value="221"
+                     aria-describedby="drag-help"
+                     aria-valuetext="Horizontal viewing angle 221 degrees">
+            </div>
+
+            <div class="control-row sim-slider-row">
+              <label class="control-row__label" for="phi-slider">Vertical tilt</label>
+              <output class="sim-readout" id="phi-readout" for="phi-slider">&#8722;9&#176;</output>
+              <input class="control-row__slider sim-slider" type="range"
+                     id="phi-slider" min="-36" max="36" step="1" value="-9"
+                     aria-describedby="drag-help"
+                     aria-valuetext="Vertical tilt minus 9 degrees, looking up from below">
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="panel sim-panel" aria-labelledby="data-heading">
+          <h2 class="panel__heading" id="data-heading">The Seven Stars</h2>
+          <div class="sim-table-wrap">
+            <p class="sim-note">
+              The stars of the Big Dipper lie at very different distances from
+              Earth, yet from our vantage point they project onto the celestial
+              sphere to form the familiar asterism.
+            </p>
+            <table class="sim-table">
+              <caption class="sr-only">
+                Big Dipper stars with right ascension, declination and distance
+                from Earth in light years.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Star</th>
+                  <th scope="col">Right ascension</th>
+                  <th scope="col">Declination</th>
+                  <th scope="col">Distance</th>
+                </tr>
+              </thead>
+              <tbody id="star-table-body"><!-- filled by simulation.js --></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: the diagram ------------------------------------------------->
+      <section class="panel sim-panel app-layout__right" aria-labelledby="diagram-heading">
+        <h2 class="panel__heading" id="diagram-heading">Big Dipper Diagram</h2>
+        <div class="panel__canvas-wrap sim-canvas-wrap">
+          <canvas id="sky" width="650" height="480" tabindex="0"
+                  role="img"
+                  aria-label="Three-dimensional diagram of the Big Dipper. Earth sits
+                  at the left; faint sight-lines run from Earth out to a patch of the
+                  celestial sphere marked with a right-ascension and declination grid.
+                  Black dots show each star's true position in space at its real
+                  distance, and yellow stars show where each one projects onto the
+                  sphere to form the Big Dipper asterism. Drag the diagram, or use the
+                  View Orientation sliders, to rotate the view.">
+          </canvas>
+        </div>
+        <p class="panel__help sim-note">
+          Drag on the diagram to change the orientation.
+        </p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- screen-reader live region: announces orientation changes on commit -->
+  <p id="sr-live" class="sr-only" aria-live="polite"></p>
+
+  <script src="foundation/kl-unl-masthead.js"></script>
+  <script src="foundation/kl-unl.js"></script>
+  <script src="simulation.js"></script>
+</body>
+</html>

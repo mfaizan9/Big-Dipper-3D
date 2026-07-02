@@ -1,0 +1,207 @@
+/* ==========================================================================
+ * Big Dipper in Three Dimensions -- sim-specific styles only.
+ * The KL-UNL foundation (foundation/kl-unl.css) provides the palette, the
+ * .app-shell / .app-layout / .panel / .control-* classes and the responsive
+ * grid.  Nothing here overrides the foundation look; it only adds the pieces
+ * the foundation does not provide (readable type scale, the canvas box, the
+ * data table, the custom slider styling and the narrow-width breakpoints).
+ * ==========================================================================*/
+
+:root {
+  --sim-space:      1rem;
+  --sim-gap:        0.75rem;
+  --sim-radius:     6px;
+  --sim-panel-bg:   #ffffff;
+  --sim-diagram-bg: #ffffff;
+  --sim-track:      #c9d3df;
+}
+
+/* Larger, zoom-friendly body copy (rule 10: >= ~1.125rem floor). */
+body {
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.app-shell {
+  padding: 0 0.5rem 1.5rem;
+}
+
+/* Give the two-column layout breathing room and consistent gaps. */
+.app-layout {
+  gap: var(--sim-space);
+  padding: 0.75rem 0 0;
+  align-items: start;
+}
+
+.app-layout__left {
+  gap: var(--sim-space);
+  min-width: 0;          /* allow the column to shrink below content min-size */
+}
+
+.app-layout__right {
+  min-width: 0;
+}
+
+/* Every panel: consistent spacing, subtle framing, balanced internal padding. */
+.sim-panel {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid var(--border-color, #767676);
+  border-radius: var(--sim-radius);
+  background: var(--sim-panel-bg);
+  overflow: hidden;
+}
+
+.sim-panel .panel__heading {
+  font-size: 1.15rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-color, #767676);
+  background: #f2f5f8;
+}
+
+.sim-note {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.control-fieldset { padding: 0.85rem 1rem 1rem; }
+
+/* ---- Diagram / canvas -------------------------------------------------- */
+.sim-canvas-wrap {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: center;
+  background: var(--sim-diagram-bg);
+}
+
+/* Keep original 650x480 internal coordinates; scale by CSS, preserve ratio. */
+#sky {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 650px;
+  aspect-ratio: 650 / 480;
+  background: #ffffff;
+  border: 1px solid #d7dde5;
+  border-radius: 4px;
+  cursor: grab;
+  touch-action: none;            /* let the diagram own the drag gesture */
+}
+#sky:active { cursor: grabbing; }
+#sky:focus-visible {
+  outline: 0.125rem solid var(--outline-color, #005fcc);
+  outline-offset: 2px;
+}
+
+/* ---- Slider rows: label / readout / full-width track aligned on a grid -- */
+.sim-slider-row {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 1rem;
+}
+.sim-slider-row .control-row__label { font-size: 1.05rem; }
+
+.sim-readout {
+  justify-self: end;
+  min-width: 3.25rem;
+  padding: 0.15rem 0.4rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-weight: 600;
+  border: 1px solid var(--border-color, #767676);
+  border-radius: 4px;
+  background: #f7f9fb;
+}
+
+.sim-slider {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 2.75rem;           /* comfortable touch target */
+}
+
+/* Custom, accessible slider styling layered on the native input (rule 9:
+   a separate component, NOT an edit of the foundation).  The native range
+   still provides all keyboard behaviour (arrows / Page / Home / End). */
+.sim-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.sim-slider:focus-visible {
+  outline: 0.125rem solid var(--outline-color, #005fcc);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+/* track */
+.sim-slider::-webkit-slider-runnable-track {
+  height: 0.5rem; border-radius: 999px; background: var(--sim-track);
+}
+.sim-slider::-moz-range-track {
+  height: 0.5rem; border-radius: 999px; background: var(--sim-track);
+}
+/* thumb */
+.sim-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 1.5rem; height: 1.5rem; margin-top: -0.5rem;
+  border-radius: 50%;
+  background: var(--button-background-color, #005a9c);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--border-color, #767676);
+}
+.sim-slider::-moz-range-thumb {
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  background: var(--button-background-color, #005a9c);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--border-color, #767676);
+}
+
+/* ---- Star data table --------------------------------------------------- */
+.sim-table-wrap { padding: 0.85rem 1rem 1rem; }
+
+.sim-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+.sim-table caption { text-align: left; }
+.sim-table th,
+.sim-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #e2e7ee;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.sim-table thead th {
+  text-align: right;
+  border-bottom: 2px solid var(--border-color, #767676);
+  font-size: 0.95rem;
+}
+.sim-table th[scope="row"],
+.sim-table thead th:first-child {
+  text-align: left;
+}
+
+/* ---- Responsive: desktop -> iPad -> phone portrait --------------------- */
+/* Carry the layout below the foundation's 56rem collapse down to phone
+   portrait.  The foundation already switches .app-layout to a single column
+   at 56rem; below that we just keep everything full-width and comfortable. */
+@media (max-width: 56rem) {
+  .app-layout__right { order: -1; }   /* diagram first in the stacked order */
+  .app-shell { padding: 0 0.5rem 1.25rem; }
+}
+
+@media (max-width: 30rem) {
+  body { font-size: 1.0625rem; }
+  .sim-canvas-wrap { padding: 0.5rem; }
+  .sim-panel .panel__heading { font-size: 1.05rem; }
+}
+
+/* Respect reduced-motion (this sim has no autonomous animation, but honour the
+   preference for the slider/drag transitions the browser may add). */
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
