@@ -26,20 +26,36 @@ body {
   padding: 0 0.5rem 1.5rem;
 }
 
-/* Give the two-column layout breathing room and consistent gaps. */
-.app-layout {
+/* Layout: the diagram spans the full width on top; the View Orientation and
+   Seven Stars panels sit below it in a two-column row (stacking on narrow
+   widths).  This is a sim-specific layout built in styles.css -- the KL-UNL
+   foundation is not modified. */
+.sim-main {
+  display: flex;
+  flex-direction: column;
   gap: var(--sim-space);
   padding: 0.75rem 0 0;
-  align-items: start;
-}
-
-.app-layout__left {
-  gap: var(--sim-space);
-  min-width: 0;          /* allow the column to shrink below content min-size */
-}
-
-.app-layout__right {
   min-width: 0;
+}
+
+.sim-controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sim-space);
+  align-items: stretch;   /* both lower panels share the same height */
+  min-width: 0;
+}
+
+.sim-controls-row > .sim-panel {
+  min-width: 0;
+}
+
+/* Collapse the two lower panels to a single column on narrow / portrait
+   widths (matches the foundation's 56rem breakpoint). */
+@media (max-width: 56rem) {
+  .sim-controls-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Every panel: consistent spacing, subtle framing, balanced internal padding. */
@@ -67,6 +83,11 @@ body {
 
 .control-fieldset { padding: 0.85rem 1rem 1rem; }
 
+/* Give the "Rotate the diagram" legend the same space above its text that the
+   panel heading has (0.6rem), so it sits lower and matches the heading rhythm.
+   padding-top is used because margin-top on a <legend> is not honoured. */
+.sim-controls-row .control-fieldset__legend { padding-top: 0.6rem; }
+
 /* ---- Diagram / canvas -------------------------------------------------- */
 .sim-canvas-wrap {
   padding: 0.75rem 1rem;
@@ -75,23 +96,39 @@ body {
   background: var(--sim-diagram-bg);
 }
 
-/* Keep original 650x480 internal coordinates; scale by CSS, preserve ratio. */
+/* Keep original 650x480 internal coordinates; scale by CSS, preserve ratio.
+   The diagram is the focus, so let it grow to fill the full-width panel
+   (capped so it never gets unreasonably large). simulation.js raises the
+   canvas backing resolution to match the displayed size, so it stays crisp. */
 #sky {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 650px;
+  max-width: 60rem;
+  margin: 0 auto;
   aspect-ratio: 650 / 480;
   background: #ffffff;
   border: 1px solid #d7dde5;
   border-radius: 4px;
-  cursor: grab;
+  /* Custom high-contrast hand cursor (white fill + black outline) so it stays
+     visible against the white diagram, instead of the near-invisible white
+     system grab hand. Falls back to grab/grabbing. */
+  cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='30'%20height='30'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M23%205.5V20c0%202.2-1.8%204-4%204h-7.3c-1.08%200-2.1-.43-2.85-1.19L1%2014.83s1.26-1.23%201.3-1.25c.22-.19.49-.29.79-.29.22%200%20.42.06.6.16.04.01%204.31%202.46%204.31%202.46V4c0-.83.67-1.5%201.5-1.5S11%203.17%2011%204v7h1V1.5c0-.83.67-1.5%201.5-1.5S15%20.67%2015%201.5V11h1V2.5c0-.83.67-1.5%201.5-1.5s1.5.67%201.5%201.5V11h1V5.5c0-.83.67-1.5%201.5-1.5s1.5.67%201.5%201.5z'%20fill='white'%20stroke='black'%20stroke-width='1.4'%20stroke-linejoin='round'/%3E%3C/svg%3E") 11 8, grab;
   touch-action: none;            /* let the diagram own the drag gesture */
 }
-#sky:active { cursor: grabbing; }
+#sky:active {
+  cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='28'%20height='28'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M4%2010.5V9c0-.8.7-1.5%201.5-1.5.2%200%20.5%200%20.7.1.2-.7.8-1.1%201.6-1.1.4%200%20.8.1%201.1.4.3-.5.8-.8%201.4-.8.5%200%201%20.2%201.3.6.3-.2.6-.3%201-.3.9%200%201.6.7%201.6%201.6V8c.9%200%201.7.3%202.3.9.7.7%201%201.6%201%202.6v3c0%203.3-2.7%206-6%206h-1.5c-1.6%200-3.1-.6-4.2-1.8l-3-3.2c-.5-.6-.5-1.5.1-2%20.5-.5%201.4-.5%202%200L6%2014.5V10.5z'%20fill='white'%20stroke='black'%20stroke-width='1.4'%20stroke-linejoin='round'/%3E%3C/svg%3E") 12 10, grabbing;
+}
 #sky:focus-visible {
   outline: 0.125rem solid var(--outline-color, #005fcc);
   outline-offset: 2px;
+}
+
+/* The caption under the diagram: indent it to line up with the canvas box's
+   left edge (the canvas wrap's horizontal padding) and the panel heading. */
+.sim-diagram-panel .panel__help {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0 1rem;
 }
 
 /* ---- Slider rows: label / readout / full-width track aligned on a grid -- */
@@ -101,7 +138,7 @@ body {
   gap: 0.35rem 0.75rem;
   margin-bottom: 1rem;
 }
-.sim-slider-row .control-row__label { font-size: 1.05rem; }
+.sim-slider-row .control-row__label { font-size: 1.05rem; font-weight: 700; }
 
 .sim-readout {
   justify-self: end;
@@ -186,11 +223,10 @@ body {
 }
 
 /* ---- Responsive: desktop -> iPad -> phone portrait --------------------- */
-/* Carry the layout below the foundation's 56rem collapse down to phone
-   portrait.  The foundation already switches .app-layout to a single column
-   at 56rem; below that we just keep everything full-width and comfortable. */
+/* The diagram is already first in the DOM, so the stacked order is correct
+   without reordering.  The two lower panels collapse to one column at 56rem
+   (see .sim-controls-row above). */
 @media (max-width: 56rem) {
-  .app-layout__right { order: -1; }   /* diagram first in the stacked order */
   .app-shell { padding: 0 0.5rem 1.25rem; }
 }
 

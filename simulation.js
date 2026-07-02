@@ -484,7 +484,7 @@ class SphereObject {
  * The simulator
  * ========================================================================*/
 const Sim = (() => {
-  let sphere, canvas, ctx, dpr = 1;
+  let sphere, canvas, ctx, dpr = 1, renderScale = 1;
   let offX = 0, offY = 0;             // sphere placement (sphere._x/_y)
   let starImg = null, arrowImg = null, imagesReady = false;
 
@@ -708,8 +708,9 @@ const Sim = (() => {
     const byZ = (a, b) => a.z - b.z;
     bS.sort(byZ); fS.sort(byZ); objAI.sort(byZ); objBI.sort(byZ);
 
-    // ---- clear ----
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // ---- clear ---- (drawing is in original 650x480 stage coords; the
+    //  transform scales those up to the canvas backing resolution)
+    ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
     ctx.clearRect(0, 0, STAGE_W, STAGE_H);
 
     // ---- draw back-to-front, matching the AS depth banding ----
@@ -745,11 +746,18 @@ const Sim = (() => {
     }
   }
 
-  /* ---- canvas sizing (scale, keep original internal coordinates) ---- */
+  /* ---- canvas sizing (scale, keep original internal coordinates) ----
+     The drawing math always runs in the original 650x480 stage coordinates.
+     We set the backing resolution from the DISPLAYED width so the diagram
+     stays crisp even when CSS scales it larger than 650px, then draw through
+     a matching transform (renderScale). */
   function resizeCanvas() {
     dpr = Math.max(1, window.devicePixelRatio || 1);
-    canvas.width  = Math.round(STAGE_W * dpr);
-    canvas.height = Math.round(STAGE_H * dpr);
+    const cssW = Math.round(canvas.getBoundingClientRect().width) || STAGE_W;
+    const backingW = Math.max(STAGE_W, Math.round(cssW * dpr));
+    renderScale = backingW / STAGE_W;
+    canvas.width  = backingW;
+    canvas.height = Math.round(STAGE_H * renderScale);
     render();
   }
 
@@ -759,8 +767,35 @@ const Sim = (() => {
 
   function onPointerDown(e) {
     try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    canvas.focus();                       // clicking the diagram focuses it for keys
     drag = { x: e.clientX, y: e.clientY, theta: theta, phi: phi };
     e.preventDefault();
+  }
+
+  /* ---- keyboard control directly on the focused canvas ---- */
+  const KEY_STEP = 2;      // degrees per arrow press
+  const KEY_BIG  = 10;     // degrees per Page press
+  function clampTheta(v) { return v < THETA_MIN ? THETA_MIN : (v > THETA_MAX ? THETA_MAX : v); }
+  function clampPhi(v)   { return v < PHI_MIN   ? PHI_MIN   : (v > PHI_MAX   ? PHI_MAX   : v); }
+
+  function onCanvasKey(e) {
+    let handled = true;
+    switch (e.key) {
+      case 'ArrowLeft':  theta = clampTheta(theta - KEY_STEP); break;
+      case 'ArrowRight': theta = clampTheta(theta + KEY_STEP); break;
+      case 'ArrowUp':    phi   = clampPhi(phi + KEY_STEP);     break;
+      case 'ArrowDown':  phi   = clampPhi(phi - KEY_STEP);     break;
+      case 'PageUp':     phi   = clampPhi(phi + KEY_BIG);      break;
+      case 'PageDown':   phi   = clampPhi(phi - KEY_BIG);      break;
+      case 'Home':       theta = THETA_MIN;                    break;
+      case 'End':        theta = THETA_MAX;                    break;
+      default: handled = false;
+    }
+    if (handled) {
+      e.preventDefault();               // stop the page from scrolling
+      syncControls();
+      render();
+    }
   }
   function onPointerMove(e) {
     if (!drag) return;
@@ -872,6 +907,8 @@ const Sim = (() => {
     canvas.addEventListener('pointermove', onPointerMove);
     canvas.addEventListener('pointerup', onPointerUp);
     canvas.addEventListener('pointercancel', onPointerUp);
+    canvas.addEventListener('keydown', onCanvasKey);
+    canvas.addEventListener('keyup', announce);   // announce once, on release
     thetaSlider.addEventListener('input', onSlider);
     phiSlider.addEventListener('input', onSlider);
     thetaSlider.addEventListener('change', announce);

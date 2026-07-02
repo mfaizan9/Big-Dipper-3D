@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Big Dipper in Three Dimensions</title>
   <link href="foundation/kl-unl.css" type="text/css" rel="stylesheet" media="all">
-  <link href="styles/styles.css" type="text/css" rel="stylesheet" media="all">
+  <link href="styles/styles.css?v=3" type="text/css" rel="stylesheet" media="all">
 </head>
 <body>
   <a class="sr-only sr-only-focusable" href="#sky">Skip to the simulation diagram</a>
@@ -13,10 +13,32 @@
   <div class="app-shell">
     <kl-unl-masthead sim-id="bigdipper" json-url="foundation/contents.json"></kl-unl-masthead>
 
-    <main class="app-layout">
+    <main class="sim-main">
 
-      <!-- LEFT: controls + information -------------------------------------->
-      <div class="app-layout__left">
+      <!-- TOP: the diagram, full width -------------------------------------->
+      <section class="panel sim-panel sim-diagram-panel" aria-labelledby="diagram-heading">
+        <h2 class="panel__heading" id="diagram-heading">Big Dipper Diagram</h2>
+        <div class="panel__canvas-wrap sim-canvas-wrap">
+          <canvas id="sky" width="650" height="480" tabindex="0"
+                  role="img"
+                  aria-label="Three-dimensional diagram of the Big Dipper. Earth sits
+                  at the left; faint sight-lines run from Earth out to a patch of the
+                  celestial sphere marked with a right-ascension and declination grid.
+                  Black dots show each star's true position in space at its real
+                  distance, and yellow stars show where each one projects onto the
+                  sphere to form the Big Dipper asterism. Drag the diagram to rotate
+                  the view; the diagram is also focusable, so once focused you can
+                  rotate it with the arrow keys (Page Up and Page Down tilt further),
+                  or use the View Orientation sliders below.">
+          </canvas>
+        </div>
+        <p class="panel__help sim-note">
+          Drag on the diagram to change the orientation.
+        </p>
+      </section>
+
+      <!-- BELOW: controls + information in two columns ---------------------->
+      <div class="sim-controls-row">
 
         <section class="panel sim-panel" aria-labelledby="controls-heading">
           <h2 class="panel__heading" id="controls-heading">View Orientation</h2>
@@ -73,27 +95,8 @@
             </table>
           </div>
         </section>
-      </div>
 
-      <!-- RIGHT: the diagram ------------------------------------------------->
-      <section class="panel sim-panel app-layout__right" aria-labelledby="diagram-heading">
-        <h2 class="panel__heading" id="diagram-heading">Big Dipper Diagram</h2>
-        <div class="panel__canvas-wrap sim-canvas-wrap">
-          <canvas id="sky" width="650" height="480" tabindex="0"
-                  role="img"
-                  aria-label="Three-dimensional diagram of the Big Dipper. Earth sits
-                  at the left; faint sight-lines run from Earth out to a patch of the
-                  celestial sphere marked with a right-ascension and declination grid.
-                  Black dots show each star's true position in space at its real
-                  distance, and yellow stars show where each one projects onto the
-                  sphere to form the Big Dipper asterism. Drag the diagram, or use the
-                  View Orientation sliders, to rotate the view.">
-          </canvas>
-        </div>
-        <p class="panel__help sim-note">
-          Drag on the diagram to change the orientation.
-        </p>
-      </section>
+      </div>
 
     </main>
   </div>
@@ -103,6 +106,6 @@
 
   <script src="foundation/kl-unl-masthead.js"></script>
   <script src="foundation/kl-unl.js"></script>
-  <script src="simulation.js"></script>
+  <script src="simulation.js?v=3"></script>
 </body>
 </html>

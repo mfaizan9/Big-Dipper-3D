@@ -73,8 +73,17 @@ placement is part of visual parity. Consequences and mitigations:
   The custom slider *styling* is layered on the native control in
   `styles/styles.css` (a separate component; the foundation is untouched) and
   does not remove any native behaviour.
-* Both slider and pointer‑drag paths mutate the **same** state object, so mouse,
-  touch and keyboard stay in sync.
+* **The diagram itself is keyboard‑operable.** The canvas is focusable
+  (`tabindex="0"`) and takes focus when clicked; once focused, the arrow keys
+  rotate the view (Left/Right change the horizontal angle, Up/Down the tilt),
+  Page Up/Page Down tilt in larger steps, and Home/End jump the horizontal angle
+  to its limits. The result is announced on key release. A visible
+  `:focus-visible` ring marks the focused canvas.
+* Both slider, pointer‑drag and canvas‑key paths mutate the **same** state
+  object, so mouse, touch and keyboard stay in sync.
+* The diagram uses a custom high‑contrast hand cursor (white fill, black
+  outline) so the drag affordance is visible against the white background
+  instead of the near‑invisible white system grab cursor.
 * Reset is provided **only** by the masthead (the `sim-reset` event is wired to
   restore the exact initial orientation, θ = 221.2°, φ = −8.6°); no second Reset
   button is added. The masthead’s Help/About dialog manages its own focus trap
@@ -102,11 +111,14 @@ Per the explicit “always speak units with numbers” requirement:
 
 ## Responsive / touch
 
-* Layout works desktop → iPad → phone **portrait**: the KL‑UNL grid collapses to
-  a single column at 56rem, and sim breakpoints (in `styles/styles.css` only)
-  carry it down to phone portrait with the diagram first, panels full‑width, and
-  **no horizontal scrolling** (verified at 375 px). Body copy ≥ 1.0625rem and the
-  layout reflows at 200% zoom without clipping.
+* Layout: the diagram (the main focus) spans the full width on top; the *View
+  Orientation* and *Seven Stars* panels sit below it in a two‑column row that
+  collapses to a single column at 56rem (sim breakpoints live in
+  `styles/styles.css` only — the foundation is not modified). The DOM order is
+  diagram → controls → data, so the stacked reading order is correct without any
+  visual reordering. Works desktop → iPad → phone **portrait** with **no
+  horizontal scrolling** (verified at 375 px). Body copy ≥ 1.0625 rem and the
+  layout reflows at 200 % zoom without clipping.
 * Pointer + touch share one Pointer‑Events path; `touch-action: none` on the
   canvas keeps a drag from scrolling the page. No hover‑only affordances.
 * Touch targets (buttons, slider thumbs) meet the ≥ 44 px minimum.
